@@ -1,0 +1,38 @@
+Aggregate Exercise: You may use retaurants.json
+
+1. Count the number of cuisines from each country
+
+ db.rest.aggregate([
+    {"$group" : {_id:"$cuisine", 
+                 count_1:{$sum:1}}}])
+
+2. Find the average score of every cuisines
+ db.rest.aggregate([
+    { $match: {   "cuisine": "American" } },
+    { $unwind: "$grades" },
+    { $group: {
+        "_id": "$name",
+        "avg_score": { $avg: "$grades.score" }
+        }
+    },
+    { $sort: { "avg_score": -1 } }
+     
+]).pretty()
+
+
+MapReduce :
+Count the number of cuisines from each country
+
+var myMapFunction = function() {
+                       emit(this.cuisines);
+                   };
+
+var myReduceFunction = function(a, b) {
+                          return cuisines.sum(b);
+                      };
+
+db.rest.mapReduce(
+                     myMapFunction,
+                     myReduceFunction,
+                     { out: "cuisines" }
+                   )
